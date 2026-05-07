@@ -30,14 +30,26 @@ O sistema simula o agendamento de avaliacoes de imoveis para uma imobiliaria. El
 
 ## Como Executar
 
+O programa deve ler os dados pela entrada padrao. Assim, ele pode ser executado redirecionando um arquivo de entrada, seguindo a mesma logica do projeto original em C++.
+
+Linux/macOS:
+
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run < entrada.txt
 ```
 
-No Windows:
+Windows:
 
 ```bash
-mvnw.cmd spring-boot:run
+mvnw.cmd spring-boot:run < entrada.txt
+```
+
+Isso significa que o conteudo do arquivo `entrada.txt` sera enviado para o programa como se fosse digitado no teclado.
+
+Tambem e possivel salvar a saida em outro arquivo:
+
+```bash
+./mvnw spring-boot:run < entrada.txt > saida.txt
 ```
 
 ## Status
