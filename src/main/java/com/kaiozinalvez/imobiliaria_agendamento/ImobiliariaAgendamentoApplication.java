@@ -4,6 +4,7 @@ import com.kaiozinalvez.imobiliaria_agendamento.models.Cliente;
 import com.kaiozinalvez.imobiliaria_agendamento.models.Corretor;
 import com.kaiozinalvez.imobiliaria_agendamento.models.Imovel;
 import com.kaiozinalvez.imobiliaria_agendamento.models.TipoImovel;
+import com.kaiozinalvez.imobiliaria_agendamento.services.Agendamento;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -70,5 +72,9 @@ public class ImobiliariaAgendamentoApplication implements CommandLineRunner {
 			Imovel imovel = new Imovel(tipo, idProp, lat, lng, preco, endereco);
 			imoveis.add(imovel);
 		}
+
+		Agendamento agendamento = new Agendamento();
+		Map<Corretor, List<Imovel>> imoveisDistribuidos = agendamento.agendar(corretores, imoveis);
+		agendamento.organizarAgenda(imoveisDistribuidos);
 	}
 }

@@ -27,7 +27,7 @@ public class Agendamento {
         return EARTH_R * c;
     }
 
-    public void agendar(List<Corretor> corretores, List<Imovel> imoveis){
+    public Map<Corretor, List<Imovel>> agendar(List<Corretor> corretores, List<Imovel> imoveis){
 
         //filtrar apenas avaliadores
         List<Corretor> avaliadores = corretores.stream()
@@ -35,14 +35,14 @@ public class Agendamento {
                 .collect(Collectors.toList());
 
         //round-robin para distribuir avaliadores para imoveis
-        Map<Corretor , List<Imovel>> imoveisDistribuidos = new LinkedHashMap<>();
+        Map<Corretor, List<Imovel>> imoveisDistribuidos = new LinkedHashMap<>();
+
+        if(avaliadores.isEmpty()){
+            return imoveisDistribuidos;
+        }
 
         for(Corretor avaliador : avaliadores){
             imoveisDistribuidos.put(avaliador, new ArrayList<>());
-        }
-
-        if(avaliadores.isEmpty()){
-            return;
         }
 
         int avaliadorIndex = 0;
@@ -52,13 +52,59 @@ public class Agendamento {
 
             avaliadorIndex++;
 
-            if(avaliadorIndex > avaliadores.size()){
+            if(avaliadorIndex == avaliadores.size()){
                 avaliadorIndex = 0;
             }
         }
 
+        return imoveisDistribuidos;
+    }
 
+    public void organizarAgenda(Map<Corretor, List<Imovel>> imoveisDistribuidos){
+        int contadorCorretor = 0;
 
+        for(Corretor corretor : imoveisDistribuidos.keySet()){
+            if(contadorCorretor > 0){
+                System.out.println();
+            }
+
+            List<Imovel> imoveisNaoVisitados = new ArrayList<>(imoveisDistribuidos.get(corretor));
+
+            double latAtual = corretor.getLat();
+            double lngAtual = corretor.getLng();
+
+            int horaAtual = 540;
+
+            System.out.println("Corretor " + corretor.getIdCorretor());
+
+            while(!imoveisNaoVisitados.isEmpty()){
+                Imovel imovelMaisProximo = null;
+                double menorDistancia = Double.MAX_VALUE;
+
+                for(Imovel imovel : imoveisNaoVisitados){
+                    double distancia = haversine(latAtual, lngAtual, imovel.getLat(), imovel.getLng());
+
+                    if(distancia < menorDistancia){
+                        menorDistancia = distancia;
+                        imovelMaisProximo = imovel;
+                    }
+                }
+
+                int tempoDeslocamento = (int) Math.round(menorDistancia * 2);
+                horaAtual += tempoDeslocamento;
+
+                int hora = horaAtual / 60;
+                int minuto = horaAtual % 60;
+                System.out.printf("%02d:%02d Imovel %d%n", hora, minuto, imovelMaisProximo.getIdImovel());
+
+                horaAtual += 60;
+                latAtual = imovelMaisProximo.getLat();
+                lngAtual = imovelMaisProximo.getLng();
+                imoveisNaoVisitados.remove(imovelMaisProximo);
+            }
+
+            contadorCorretor++;
+        }
     }
 
 }
